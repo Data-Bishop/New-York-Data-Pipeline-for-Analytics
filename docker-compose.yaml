@@ -1,12 +1,21 @@
-version: '3'
 services:
   postgres:
     image: postgres:latest
     environment:
-      POSTGRES_DB: ny_taxi
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: root
+      - POSTGRES_USER=databishop
+      - POSTGRES_DB=ny_taxi
+      - POSTGRES_PASSWORD=ny_taxi
     ports:
-      - "5432:5432"
+      - 5432:5432
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=databishop@databishop.com
+      - PGADMIN_DEFAULT_PASSWORD=databishop
+    ports:
+      - 8080:80
+    depends_on:
+      - postgres
