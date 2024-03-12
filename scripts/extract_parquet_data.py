@@ -1,9 +1,13 @@
 import pyarrow.parquet as pq
 import requests
 from io import BytesIO
+import time
 
 def download_parquet_data(url, chunk_size=1024):
     try:
+        # Start mesuring download time
+        start_time = time.time()
+        
         response = requests.get(url, stream=True)
 
         # Raise an exception for 4xx and 5xx status codes
@@ -15,6 +19,10 @@ def download_parquet_data(url, chunk_size=1024):
         for chunk in response.iter_content(chunk_size=chunk_size):
             parquet_data.write(chunk) # Write to the BytesIO object
         
+        # Calculate the download time
+        download_time = time.time() - start_time
+        print(f"Successfully Downloaded Parquet Data...\nDownload time: {download_time:.2f} seconds")
+        
         return parquet_data
     except requests.exceptions.RequestException as e:
         print(f"Error downloading data: {e}")
@@ -23,11 +31,17 @@ def download_parquet_data(url, chunk_size=1024):
 def read_parquet_from_bytesio(parquet_data):
     
     try:
+        start_time = time.time()
+        
         # Reset the position to the beginning
         parquet_data.seek(0)
 
         # Read the parquet data from the BytesIO object
         table = pq.read_table(parquet_data)
+        
+        read_time = time.time() - start_time
+        print(f"Successfully Read Parquet Data...\nRead time: {read_time:.2f} seconds")
+
         return table
     except Exception as e:
         print(f"Error reading parquet data: {e}")
