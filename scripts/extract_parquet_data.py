@@ -3,10 +3,12 @@ import requests
 from io import BytesIO
 
 def download_parquet_data(url, chunk_size=1024):
+    try:
+        response = requests.get(url, stream=True)
 
-    response = requests.get(url, stream=True)
-
-    if response.status_code == 200:
+        # Raise an exception for 4xx and 5xx status codes
+        response.raise_for_status()
+        
         # Create an empty BytesIO object to store the data
         parquet_data = BytesIO()
             
@@ -14,18 +16,22 @@ def download_parquet_data(url, chunk_size=1024):
             parquet_data.write(chunk) # Write to the BytesIO object
         
         return parquet_data
-        
-    else:
-        print(f"failed to retrieve data. Status code: {response.status_code}")
+    except requests.exceptions.RequestException as e:
+        print(f"Error downloading data: {e}")
         return None
     
 def read_parquet_from_bytesio(parquet_data):
-    # Reset the position to the beginning
-    parquet_data.seek(0)
     
-    # Read the parquet data from the BytesIO object
-    table = pq.read_table(parquet_data)
-    return table
+    try:
+        # Reset the position to the beginning
+        parquet_data.seek(0)
+
+        # Read the parquet data from the BytesIO object
+        table = pq.read_table(parquet_data)
+        return table
+    except Exception as e:
+        print(f"Error reading parquet data: {e}")
+        return None
 
 def main():
     # URL of the parquet file
