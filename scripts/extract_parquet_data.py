@@ -4,6 +4,17 @@ from io import BytesIO
 import time
 
 def download_parquet_data(url, chunk_size=1024):
+    """
+    Download Parquet data from the given URL in chunks.
+
+    Parameters:
+    - url (str): URL of the Parquet file.
+    - chunk_size (int): Size of each download chunk in bytes. Default: 1024.
+
+    Returns:
+    - BytesIO: BytesIO object containing the downloaded data.
+    """
+    
     try:
         # Start mesuring download time
         start_time = time.time()
@@ -29,6 +40,15 @@ def download_parquet_data(url, chunk_size=1024):
         return None
     
 def read_parquet_from_bytesio(parquet_data):
+    """
+    Reads the parquet data from a BytesIO object using PyArrow
+
+    Parameters:
+        parquet_data (BytesIO): BytesIO object containing the data.
+
+    Returns:
+        pyarrow.Table: PyArrow table representing the parquet data.
+    """
     
     try:
         start_time = time.time()
