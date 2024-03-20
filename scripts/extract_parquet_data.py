@@ -64,7 +64,7 @@ def read_parquet_from_bytesio(parquet_data):
 
         return table
     except Exception as e:
-        print(f"Error reading parquet data: {e}")
+        print(f"Error reading data: {e}")
         return None
 
 def main():
@@ -81,6 +81,7 @@ def main():
         if table:
             # Display the schema of the PyArrow Table
             print(table.schema)
+            print(table.to_pandas().head())
         else:
             print("Failed to read the parquet data.")
             
