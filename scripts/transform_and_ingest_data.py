@@ -1,14 +1,13 @@
 import pandas as pd
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
 import pyarrow.parquet as pq
 from io import BytesIO
-from test_parquet import read_parquet_file
 from extract_parquet_data import download_parquet_data, read_parquet_from_bytesio
 
 
 def load_data_into_postgres(df, batch_size=1000):
     
-    connection_string = 'postgresql://postgres:Databishop@localhost:5432/legodb'
+    connection_string = 'postgresql://databishop:ny_taxi@localhost:5432/ny_taxi'
     engine =  create_engine(connection_string)
 
     # Create the database table
