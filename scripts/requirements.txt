@@ -2,3 +2,4 @@ pandas
 sqlalchemy
 pyarrow
 requests
+psycopg2
