@@ -7,6 +7,20 @@ from extract_parquet_data import download_parquet_data, read_parquet_from_bytesi
 
 
 def load_data_into_postgres(df, user, password, host, db, batch_size=1000):
+    """
+    Load data in a Pandas dataframe into a postgres database in chunks.
+
+    Parameters:
+    - df (dataframe): Pandas dataframe containing the data.
+    - user (str): Postgres user.
+    - password (str): Password for the user.
+    - host (str): Host name for the postgres server.
+    - db (str): The pandas dataframe.
+    - chunk_size (int): Size of each download chunk in bytes. Default: 1024.
+
+    Returns:
+    - BytesIO: BytesIO object containing the downloaded data.
+    """
     
     connection_string = f'postgresql://{user}:{password}@{host}:5432/{db}'
     engine =  create_engine(connection_string)
