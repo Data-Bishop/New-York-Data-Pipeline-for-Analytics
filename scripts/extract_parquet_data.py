@@ -32,11 +32,11 @@ def download_parquet_data(url, chunk_size=1024):
         
         # Calculate the download time
         download_time = time.time() - start_time
-        print(f"Successfully Downloaded Parquet Data...\nDownload time: {download_time:.2f} seconds")
+        print(f"Successfully Downloaded Parquet Data...\nDownload time: {download_time:.2f} seconds\n")
         
         return parquet_data
     except requests.exceptions.RequestException as e:
-        print(f"Error downloading data: {e}")
+        print(f"Error downloading data: {e}\n")
         return None
     
 def read_parquet_from_bytesio(parquet_data):
@@ -60,11 +60,11 @@ def read_parquet_from_bytesio(parquet_data):
         table = pq.read_table(parquet_data)
         
         read_time = time.time() - start_time
-        print(f"Successfully Read Parquet Data...\nRead time: {read_time:.2f} seconds")
+        print(f"Successfully Read Parquet Data...\nRead time: {read_time:.2f} seconds\n")
 
         return table
     except Exception as e:
-        print(f"Error reading data: {e}")
+        print(f"Error reading data: {e}\n")
         return None
 
 def main():
@@ -83,7 +83,7 @@ def main():
             print(table.schema)
             print(table.to_pandas().head())
         else:
-            print("Failed to read the parquet data.")
+            print("Failed to read the parquet data.\n")
             
         # Close the BytesIO object
         parquet_data.close()

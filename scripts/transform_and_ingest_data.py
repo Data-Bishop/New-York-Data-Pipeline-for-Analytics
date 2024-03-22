@@ -1,12 +1,10 @@
-import pandas as pd
+import time
 import os
 from sqlalchemy import create_engine
-import pyarrow.parquet as pq
-from io import BytesIO
 from extract_parquet_data import download_parquet_data, read_parquet_from_bytesio
 
 
-def load_data_into_postgres(df, user, password, host, db, batch_size=1000):
+def load_data_into_postgres(df, user, password, host, db, batch_size=100000):
     """
     Load data in a Pandas dataframe into a postgres database in chunks.
 
@@ -15,11 +13,8 @@ def load_data_into_postgres(df, user, password, host, db, batch_size=1000):
     - user (str): Postgres user.
     - password (str): Password for the user.
     - host (str): Host name for the postgres server.
-    - db (str): The pandas dataframe.
-    - chunk_size (int): Size of each download chunk in bytes. Default: 1024.
-
-    Returns:
-    - BytesIO: BytesIO object containing the downloaded data.
+    - db (str): Name of the database to connect to.
+    - batch_size (int): Size of each load chunk in records. Default: 100000.
     """
     
     connection_string = f'postgresql://{user}:{password}@{host}:5432/{db}'
@@ -30,15 +25,16 @@ def load_data_into_postgres(df, user, password, host, db, batch_size=1000):
     
     try:
         with engine.connect() as conn:
-            # for i in range(0, len(df), batch_size):
-            batch_df = df[:batch_size]
-            batch_df.to_sql(table_name, conn, if_exists='append', index=False)
-            
-            # print(f"Inserted {len(batch_df)} records into {table_name} (Batch {i//batch_size + 1})")
-            print(f"Inserted {len(batch_df)} records into {table_name}")
-        print(f"The {table_name} created successfully.")
+            total_records = len(df)
+            start_time = time.time()
+            for i in range(0, total_records, batch_size):
+                batch_df = df[i:i+batch_size]
+                batch_df.to_sql(table_name, conn, if_exists='append', index=False)
+                print(f"Inserted {len(batch_df)} records into {table_name} (Batch {i//batch_size + 1})\n")
+            load_time = time.time() - start_time
+            print(f"The {table_name} created successfully...\nInserted {total_records} records into {table_name}. Load time: {load_time:.2f} seconds.\n")
     except Exception as e:
-        print(f'Error creating table and inserting data ({table_name}): {e}')
+        print(f'Error creating table and inserting data ({table_name}): {e}\n')
 
 def main():
     url = "https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2023-01.parquet"
